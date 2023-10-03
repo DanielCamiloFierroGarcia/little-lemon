@@ -1,6 +1,7 @@
 package com.example.littlelemoncapstone.composables
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,8 +34,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.littlelemoncapstone.R
+import com.example.littlelemoncapstone.navigation.Home
+import com.example.littlelemoncapstone.navigation.Onboarding
 import com.example.littlelemoncapstone.ui.theme.LLGreen
 import com.example.littlelemoncapstone.ui.theme.PrimaryGreen
+import com.example.littlelemoncapstone.validateData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,11 +55,17 @@ fun Onboarding(context: Context, navHostController: NavHostController) {
     val email = remember {
         mutableStateOf("")
     }
+
+    //val imeState = rememberImeState()
+    val scrollState = rememberScrollState()
+
+
     Column(
         Modifier
             .fillMaxSize()
             .fillMaxWidth()
-            .padding(20.dp),
+            .padding(20.dp)
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
@@ -136,7 +147,24 @@ fun Onboarding(context: Context, navHostController: NavHostController) {
         Spacer(modifier = Modifier.size(40.dp))
 
         Button(onClick = {
-            //Implement
+            if(validateData(firstName.value, lastName.value, email.value)){
+                sharedPreferences.edit()
+                    .putString("firstName", firstName.value)
+                    .putString("lastName", lastName.value)
+                    .putString("email", email.value)
+                    .putBoolean("userRegistered", true)
+                    .apply()
+
+                Toast.makeText(context, "Registration successful", Toast.LENGTH_SHORT).show()
+
+                navHostController.navigate(Home.route){
+                    popUpTo(Onboarding.route){inclusive = true}
+                    launchSingleTop = true
+                }
+            }
+            else{
+                Toast.makeText(context, "Registration unsuccessful. Please enter all data.", Toast.LENGTH_SHORT).show()
+            }
         },
             modifier = Modifier
                 .fillMaxWidth()
