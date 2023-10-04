@@ -10,7 +10,7 @@ import com.example.littlelemoncapstone.navigation.Onboarding
 import com.example.littlelemoncapstone.navigation.Profile
 
 @Composable
-fun Navigation(navController: NavHostController, context: Context) {
+fun NavigationComposable(navController: NavHostController, context: Context) {
     val sharedPreferences = context.getSharedPreferences("Little Lemon", Context.MODE_PRIVATE)
     var startDestination = Onboarding.route
 
